@@ -4,6 +4,7 @@
 #include "pch.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <Windows.h>
 
 using namespace cv;
 using namespace std;
@@ -15,16 +16,29 @@ int main()
 		return -1;
 
 	Mat edges;
+	int scale = 3;
 	namedWindow("edges", 1);
 	for (;;)
 	{
+		if (GetKeyState('A') & 0x8000/*Check if high-order bit is set (1 << 15)*/ && (scale< 7))
+		{
+			scale += 2;
+			cout << scale << endl;
+		}
+
+		if (GetKeyState('Z') & 0x8000 && (scale > 3))
+		{
+			scale -= 2;
+			cout << scale << endl;
+		}
+
 		Mat frame;
 		cap >> frame; // get a new frame from camera
 		cvtColor(frame, edges, COLOR_BGR2GRAY);
-		GaussianBlur(edges, edges, Size(7, 7), 0.5, 1.5);
-		Canny(edges, edges, 0, 30, 3);
+		GaussianBlur(edges, edges, Size(7, 7), 1.5, 1.5);
+		Canny(edges, edges, 0, 30, scale);
 		imshow("edges", edges);
-		if (waitKey(30) >= 0) break;
+		if ((waitKey(30) >= 0) && !(GetKeyState('A') & 0x8000/*Check if high-order bit is set (1 << 15)*/) && !(GetKeyState('Z') & 0x8000)) break;
 	}
 	// the camera will be deinitialized automatically in VideoCapture destructor
 	return 0;
