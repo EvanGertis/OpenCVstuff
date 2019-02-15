@@ -20,7 +20,7 @@ int main()
 	int scale = 3;
 	namedWindow("edges", 1);
 	for (;;)
-	{
+	{ 
 		if (GetKeyState('A') & 0x8000/*Check if high-order bit is set (1 << 15)*/ && (scale< 7))
 		{
 			scale += 2;
